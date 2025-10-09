@@ -47,7 +47,7 @@ git config --global user.email "tu.email@ejemplo.com" (si tenes el mail como pri
 # Configurar el editor por defecto (opcional)
 git config --global core.editor "code --wait"
 
-# Configurar main como default folder siempre
+# Configurar main como default folder (siempre)
 git config --global init.defaultBranch main
 
 # Esto ayuda a que al juntar ramas no se nos enquilombe
