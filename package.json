@@ -1,0 +1,32 @@
+{
+  "name": "uner.programacion-iii-tp-final",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development node --watch app.js",
+    "debug": "NODE_ENV=debug node --inspect app.js", 
+    "prod": "NODE_ENV=production node app.js",
+    "start": "NODE_ENV=production node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmazingCrab/UNER.Programacion-III-TP-Final.git"
+  },
+  "keywords": [],
+  "author": "Mailen Ovejero, Emanuel Conte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmazingCrab/UNER.Programacion-III-TP-Final/issues"
+  },
+  "homepage": "https://github.com/AmazingCrab/UNER.Programacion-III-TP-Final#readme",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}

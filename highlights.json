@@ -1,3 +1,24 @@
 {
-  "files": {}
+  "files": {
+    "app.js": {
+      "#95A5A640": [
+        {
+          "startLine": 0,
+          "startCharacter": 0,
+          "endLine": 6,
+          "endCharacter": 22,
+          "name": "Configuration",
+          "description": "Config files, settings, constants"
+        },
+        {
+          "startLine": 38,
+          "startCharacter": 0,
+          "endLine": 44,
+          "endCharacter": 3,
+          "name": "Configuration",
+          "description": "Config files, settings, constants"
+        }
+      ]
+    }
+  }
 }
