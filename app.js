@@ -1,9 +1,7 @@
 import express from 'express';
 import chalk from 'chalk';
 
-// Middlewares
 import { notFound, errorHandler } from './middlewares/index.js'; 
-//
 
 const app = express();
 
@@ -16,9 +14,9 @@ app.set('version', '1.0.0');
 // Settings de desarrollo
 app.set('env', process.env.NODE_ENV || 'development');
 
-// middleware
+// Middlewares
 app.use(express.json({ limit: '5mb' })); // 5mb previene ataques DoS 
-app.use(express.urlencoded({ extended: true, limit: '5mb' })) // para mas adelante utilizar datos desdde un form
+app.use(express.urlencoded({ extended: true, limit: '5mb' })) // para recibir info de
 
 app.get("/", (req, res) => {
   const appName = app.get('app name');
@@ -37,7 +35,7 @@ app.get("/", (req, res) => {
 });
 // Matches both /message and /messages
 //"/message{s}"
-
+// codigo ejemplo
 app.get("/:username/messages/:messageId", (req, res) => {
   console.log(req.params);
   res.end(); //  * { username: "odin", messageId: "79687378" }
