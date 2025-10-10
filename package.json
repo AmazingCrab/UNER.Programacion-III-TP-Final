@@ -8,9 +8,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "dev": "NODE_ENV=development node --watch app.js",
-    "debug": "NODE_ENV=debug node --inspect app.js", 
-    "prod": "NODE_ENV=production node app.js",
+    "dev": "NODE_ENV=development nodemon --watch app.js",
+    "debug": "NODE_ENV=debug nodemon --inspect app.js",
+    "prod": "NODE_ENV=production nodemon app.js",
     "start": "NODE_ENV=production node app.js"
   },
   "repository": {
@@ -27,6 +27,36 @@
   "dependencies": {
     "chalk": "^5.6.2",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "nodemonConfig":{
+  "name": "my-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "verbose": false,
+    "watch": [
+      "src/",
+      "routes/",
+      "config/",
+      ".env.development"
+    ],
+    "ignore": [
+      "node_modules/**",
+      "dist/",
+      "test/*.spec.ts"
+    ],
+    "exec": "node",
+    "ext": "js,json,ts",
+    "delay": "1000",
+    "env": {
+      "NODE_ENV": "development",
+      "PORT": "3000"
+    }
   }
+}
 }
