@@ -3,15 +3,35 @@
  * Debe colocarse el último de todos los middlewares, después de las rutas y del 404.
  */
 export const errorHandler = (err, req, res, next) => {
-    console.error(err.stack); // Usar err.stack da info completa del error
+
+    // 1) Evita que si se enviaron cabeceras no se envien denuevo crasheando el server
+    if (res.headersSent) {
+        return next(err);
+    }
+    // 2) Obtener el entorno configurado por la línea app.set('env', ...)
+    const env = req.app.get('env');
+
+    // 3) Define el estado HTTP (usa 500 si no está especificado en el error)
+    const statusCode = err.status || 500;
     
-    // Si la respuesta ya se ha enviado (cabeceras enviadas), pasamos al manejador de errores de Express
-    if (res.headersSent) { // esto evita que si se enviaron cabeceras no se envien denuevo crasheando el server
-        return next(err); 
+    // 4) Lógica para mostrar detalles del error: solo en desarrollo o debug
+    let errorDetails = {}; // Inicializamos como objeto vacío
+
+    if (env === 'development' || env === 'debug') {
+        console.error(err.stack); // Usar err.stack da info completa del error
+        
+        // Incluimos el stack y otros detalles en la respuesta JSON
+        errorDetails = {
+            stack: err.stack,
+            type: err.name,
+            code: err.code 
+        };      
     }
 
-    const statusCode = err.status || 500;
-    const message = err.message || 'Error interno del servidor';
-
-    res.status(statusCode).send(`500 - ${message}`);
-};
+    // 5) Envía la respuesta con el estado HTTP y los detalles (solo si no estamos en producción)
+    res.status(statusCode).json({
+        status:'error',
+        message: err.message || 'Error Interno del Servidor',
+        ...errorDetails // Usar spread operator para incluir solo las propiedades si existen
+    });
+}
