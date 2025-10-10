@@ -1,6 +1,10 @@
 import express from 'express';
 import chalk from 'chalk';
 
+// Middlewares
+import { notFound, errorHandler } from './middlewares/index.js'; 
+//
+
 const app = express();
 
 // Settings de aplicación
@@ -16,11 +20,10 @@ app.set('env', process.env.NODE_ENV || 'development');
 app.use(express.json({ limit: '5mb' })); // 5mb previene ataques DoS 
 app.use(express.urlencoded({ extended: true, limit: '5mb' })) // para mas adelante utilizar datos desdde un form
 
-
 app.get("/", (req, res) => {
   const appName = app.get('app name');
   const version = app.get('version');
-  
+
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -30,43 +33,31 @@ app.get("/", (req, res) => {
         <h2>Versión: ${version}</h2>
       </body>
     </html>
-  `)});
+  `)
+});
 // Matches both /message and /messages
 //"/message{s}"
 
+app.get("/:username/messages/:messageId", (req, res) => {
+  console.log(req.params);
+  res.end(); //  * { username: "odin", messageId: "79687378" }
+});
 
 
 
 
 
 
+app.use(notFound);    // Página personalizada de error 404
+app.use(errorHandler);// Página personalizada de error 500
 
+app.listen(app.get('port'), (error) => {
 
-  app.get("/:username/messages/:messageId", (req, res) => {
-    console.log(req.params);
-    res.end(); //  * { username: "odin", messageId: "79687378" }
-  });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  app.listen(app.get('port'), (error) => {
-
-    if (error) {
-      throw error;
-    }
-    console.log(chalk.green.italic(`\nServer Express: V5.1.0 - ONLINE \nIP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
-  });
+  if (error) {
+    throw error;
+  }
+  console.log(chalk.green.italic(`\nServer Express: V5.1.0 - ONLINE \nIP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
+});
 
 
 

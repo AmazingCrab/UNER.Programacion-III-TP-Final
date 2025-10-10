@@ -14,3 +14,14 @@ chrome://inspect
 - Linux: Si no cierra, entonces sudo fuser -k 3000/tcp
 - Windows: netstat -ano | findstr :3000 + taskkill /PID "numero" /F
 
+# API by Design
+
+GET     /películas  Obtener la lista de películas
+
+GET     /películas/:id  Buscar una película por su ID
+
+POST    /películas  Crear una nueva película
+
+PUT     /películas  Actualizar una película existente
+
+DELETE  /películas  Eliminar una película existente
