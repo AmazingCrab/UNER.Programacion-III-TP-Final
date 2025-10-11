@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import mysql from 'mysql2/promise'; // Usar la versión 'promise' para async/await
+import mysql from 'mysql2/promise'; //[Resultados de la Consulta,Metadata de la Conexion/Consulta] 
+
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
