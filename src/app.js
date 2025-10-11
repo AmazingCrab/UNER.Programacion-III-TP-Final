@@ -12,15 +12,21 @@ const envFile = process.env.NODE_ENV === 'production'
 dotenv.config({ path: envFile });  // *-No mover-*
 
 import pool from './config/db.js'; // Importar el pool de conexiones *-no mover-*
-import authRouter from './routes/auth.routes.js'; // Importar Router de Auth
 
-// IMPORTAR EL MIDDLEWARE DE VERIFICACIÓN DE JWT (verifyToken)
+// IMPORTAMOS EL ROUTER CENTRAL DE LA API
+import apiRouter from './routes/index.js'; // Contiene /auth, /salones, etc.
+
+// IMPORTAR MIDDLEWARES DE SEGURIDAD Y CIERRE
 import { verifyToken } from './middlewares/auth.middleware.js'; 
+import { notFound, errorHandler } from './middlewares/index.js'; 
 
-import { notFound, errorHandler } from './middlewares/index.js'; // *-no mover-* const app = express(); // *-No mover-*
+const app = express(); 
 
-// Settings de aplicación
-app.set('host', '127.0.0.1');
+// ************************************************************
+// CONFIGURACIÓN: USAR VARIABLES DE ENTORNO
+// ************************************************************
+// Settings de aplicación: Usar variables de entorno para HOST y PORT
+app.set('host', process.env.HOST || '127.0.0.1');
 app.set('port', process.env.PORT || 3000);
 app.set('app name', 'API Rest');
 app.set('version', '1.0.0');
@@ -46,21 +52,7 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }))
 // ZONA DE RUTAS DE LA APLICACIÓN
 // ************************************************************
 
-// 1. RUTAS PÚBLICAS (Login/Register)
-// Estas rutas no necesitan token y se ejecutan primero.
-app.use('/api/auth', authRouter); 
-
-// 2. MIDDLEWARE DE AUTENTICACIÓN (JWT Check)
-// CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA REQUERIRÁ UN TOKEN VÁLIDO.
-app.use(verifyToken); 
-
-// 3. RUTAS PROTEGIDAS DE LA API (BREAD de Persona 2 - Ejemplo)
-// A PARTIR DE AQUÍ SE ASUME QUE EL USUARIO ESTÁ AUTENTICADO (req.user existe)
-// app.use('/api/salones', salonesRouter); 
-// app.use('/api/reservas', reservasRouter); 
-
-
-// Ejemplo de ruta de bienvenida
+// RUTA DE BIENVENIDA (Pública y fuera del prefijo /api)
 app.get("/", (req, res) => {
   const appName = app.get('app name');
   const version = app.get('version');
@@ -76,11 +68,24 @@ app.get("/", (req, res) => {
     </html>
   `)
 });
-// Código ejemplo (Esta ruta ahora está protegida por verifyToken)
-app.get("/:username/messages/:messageId", (req, res) => {
-  console.log(req.params);
-  res.end();
+
+// MIDDLEWARE DE AUTENTICACIÓN (JWT Check)
+// ⚠️ CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA REQUERIRÁ UN TOKEN VÁLIDO.
+// La única excepción es '/api/auth/login' que se maneja dentro del apiRouter.
+app.use('/api', (req, res, next) => {
+    // Excluir específicamente la ruta de login de la verificación del token
+    // Si la ruta es '/api/auth/login', saltamos verifyToken
+    if (req.path === '/auth/login' && req.method === 'POST') {
+        return next();
+    }
+    // Para todas las demás rutas dentro de '/api', aplica la verificación
+    verifyToken(req, res, next);
 });
+
+
+// RUTA CENTRAL DE LA API: Montamos el router central bajo el prefijo '/api'
+// Esto incluye /api/auth, /api/salones, etc.
+app.use('/api', apiRouter);
 
 
 // ************************************************************
@@ -90,12 +95,11 @@ app.get("/:username/messages/:messageId", (req, res) => {
 app.use(notFound);    // Página personalizada de error 404
 app.use(errorHandler);// Página personalizada de error 500
 
-app.listen(app.get('port'), (error) => {
+app.listen(app.get('port'), app.get('host'), (error) => {
 
   if (error) {
     throw error;
   }
+  // El mensaje ahora muestra la IP y el puerto correctos del .env
   console.log(chalk.green.italic(`\n\u2714 Server Express: V5.1.0 - ONLINE\n\n\u2714 IP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
 });
-
-
