@@ -1,4 +1,4 @@
-//  crypto es un modulo de node para hasheo
+//  crypto es un modulo de node para
 import pool from '../config/db.js';
 import crypto from 'crypto'; // Modulo de Node: Importar el módulo Crypto
 
@@ -23,7 +23,7 @@ export const getUserByUsername = async (username) => {
     try {
         const [rows] = await pool.query(sql, [username]);
         return rows.length ? rows[0] : null; 
-    } catch (error) {
+    } catch (error) {   // los errores no van al handler xq es solo la capa de negocio
         console.error("Error al obtener usuario por nombre de usuario:", error);
         throw new Error('Database query failed');
     }
