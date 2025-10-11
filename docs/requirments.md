@@ -7,4 +7,4 @@
 ### Production
 - dotenv
 - express
-
+- mysql2
