@@ -4,6 +4,7 @@ import dotenv from 'dotenv';  // var de entorno
 import cors from 'cors';      // dominios multiples y seguros
 import compression from 'compression';  // compresion de datos
 import morgan from 'morgan';  // logging HTTP
+import helmet from 'helmet';  // seguridad
 
 // Determina el archivo a cargar basado en NODE_ENV *-No mover-*
 const envFile = process.env.NODE_ENV === 'production' 
@@ -33,6 +34,9 @@ app.set('version', '1.0.0');
 
 // Settings de desarrollo
 app.set('env', process.env.NODE_ENV || 'development');
+
+// seguridad
+app.use(helmet());
 
 // ************************************************************
 // MIDDLEWARES GLOBALES (Orden Lógico de Ejecución)
