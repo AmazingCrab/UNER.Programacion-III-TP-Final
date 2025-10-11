@@ -3,7 +3,7 @@
 ### Testing
 - Eslint
 - Chalk
--
+- nodemon
 
 ### Production
 - dotenv
@@ -13,3 +13,4 @@
 - compresion
 - morgan
 - jsonwebtoken
+- helmet
