@@ -1,19 +1,21 @@
 import express from 'express';
-import chalk from 'chalk';
-import dotenv from 'dotenv';
+import chalk from 'chalk';    // colores
+import dotenv from 'dotenv';  // var de entorno
+import cors from 'cors';      // dominios multiples y seguros
+import compression from 'compression';  // compresion de datos
+import morgan from 'morgan';  // login con tokens
 
 // Determina el archivo a cargar basado en NODE_ENV *-No mover-*
 const envFile = process.env.NODE_ENV === 'production' 
     ? '.env.production' 
     : '.env.development';
-// NUEVO: Carga las variables de entorno *-No mover-*
-dotenv.config({ path: envFile }); // 
+dotenv.config({ path: envFile });  // *-No mover-*
 
-import pool from './config/db.js'; // Importar el pool de conexiones
+import pool from './config/db.js'; // Importar el pool de conexiones *-no mover-*
 
-import { notFound, errorHandler } from './middlewares/index.js'; 
+import { notFound, errorHandler } from './middlewares/index.js'; // *-no mover-* 
 
-const app = express();
+const app = express(); // *-No mover-*
 
 // Settings de aplicación
 app.set('host', '127.0.0.1');
@@ -25,6 +27,11 @@ app.set('version', '1.0.0');
 app.set('env', process.env.NODE_ENV || 'development');
 
 // Middlewares
+app.use(morgan('dev')); //login 
+app.use(compression()); //optimización
+app.use(cors());        // dominios
+
+// BODY.parsers - para leer datos JSON y URL-Encoded
 app.use(express.json({ limit: '5mb' })); // 5mb previene ataques DoS 
 app.use(express.urlencoded({ extended: true, limit: '5mb' })) // para recibir info de
 
