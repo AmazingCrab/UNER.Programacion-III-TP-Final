@@ -18,6 +18,9 @@ Si cambie de rama, el primer push lo hago asi
 # git push 
 luego del push origin "rama actual" uso siempre este
 
+# git add -A
+suma archivos nuevos o modificados + lo eliminados
+
 # git rm archivo
 borra archivo y lo manda a staged para borar en github(cuando hago el commit -m "borro archivo + nombre") se concreta el borrado luego del push
 
