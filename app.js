@@ -1,5 +1,15 @@
 import express from 'express';
 import chalk from 'chalk';
+import dotenv from 'dotenv';
+
+// Determina el archivo a cargar basado en NODE_ENV *-No mover-*
+const envFile = process.env.NODE_ENV === 'production' 
+    ? '.env.production' 
+    : '.env.development';
+// NUEVO: Carga las variables de entorno *-No mover-*
+dotenv.config({ path: envFile }); // 
+
+import pool from './config/db.js'; // Importar el pool de conexiones
 
 import { notFound, errorHandler } from './middlewares/index.js'; 
 
@@ -54,7 +64,7 @@ app.listen(app.get('port'), (error) => {
   if (error) {
     throw error;
   }
-  console.log(chalk.green.italic(`\nServer Express: V5.1.0 - ONLINE \nIP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
+  console.log(chalk.green.italic(`\n\u2714 Server Express: V5.1.0 - ONLINE\n\n\u2714 IP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
 });
 
 
