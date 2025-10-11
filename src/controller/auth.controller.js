@@ -1,5 +1,3 @@
-// src/controllers/auth.controller.js
-
 import jwt from 'jsonwebtoken';
 import { getUserByUsername, verifyPassword } from '../services/user.service.js';
 import { ROLES } from '../config/roles.js';
