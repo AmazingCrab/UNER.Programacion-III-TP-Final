@@ -12,7 +12,7 @@ const envFile = process.env.NODE_ENV === 'production'
 dotenv.config({ path: envFile });  // *-No mover-*
 
 import pool from './config/db.js'; // Importar el pool de conexiones *-no mover-*
-
+import authRouter from './routes/auth.routes.js'; // Importar Router de Auth
 import { notFound, errorHandler } from './middlewares/index.js'; // *-no mover-* 
 
 const app = express(); // *-No mover-*
@@ -27,13 +27,14 @@ app.set('version', '1.0.0');
 app.set('env', process.env.NODE_ENV || 'development');
 
 // Middlewares
-app.use(morgan('dev')); //login 
-app.use(compression()); //optimización
-app.use(cors());        // dominios
-
-// BODY.parsers - para leer datos JSON y URL-Encoded
+app.use(morgan('dev')); //  LOGGIN
+app.use(compression()); //  RENDIMIENTO
+app.use(cors());        //  SEGURIDAD DE DOMINIOS
+// BODY.parsers - para leer datos JSON y URL-Encoded-> antes que cualquier RUTA
 app.use(express.json({ limit: '5mb' })); // 5mb previene ataques DoS 
 app.use(express.urlencoded({ extended: true, limit: '5mb' })) // para recibir info de
+
+app.use('/api/auth', authRouter); // RUTA BASE o PREFIJO DE ROUTER
 
 app.get("/", (req, res) => {
   const appName = app.get('app name');
