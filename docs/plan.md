@@ -16,7 +16,7 @@ Implementar operaciones BREAD (Browse, Read, Edit, Add, Delete) completas para u
    - Establecer conexión a base de datos MySQL
    - Configurar variables de entorno
 
-2. **Registro de Logs + Compresion + Cords** (Respetando el orden)
+2. **Registro de Logs + Compresion + Cors** (Respetando el orden)
    - morgan - > buenas prácticas
    - Compresión -> optimiza rendimiento
    - CORS - > Permite operar de manera segura con los dominios y tener mas de uno
@@ -25,19 +25,19 @@ Implementar operaciones BREAD (Browse, Read, Edit, Add, Delete) completas para u
 	- Análisis de la petición.
    - Necesario para leer el JSON enviado en las peticiones POST/PUT/PATCH.
 
-4. **API Cache**
-	Apicache	-> Debe ir aquí para que el caching se aplique a los endpoints que siguen, pero solo en rutas públicas de solo lectura (ej. /salones, /servicios).
-   (no en login o register)
-
-2. **Autenticación (JWT)**
+4. **Autenticación (JWT)**
    - Implementar login/autenticación de usuarios
    - Generación de tokens JWT
    - Manejo de sesiones
 
-3. **Middleware de Autorización**
+5. **Middleware de Autorización**
    - Middleware para verificar JWT
    - Control de autorización basado en roles
    - Protección de rutas
+
+6. **API Cache**
+	Apicache	-> Debe ir aquí para que el caching se aplique a los endpoints que siguen, pero solo en rutas públicas de solo lectura (ej. /salones, /servicios).
+   (no en login o register)
 
 4. **Manejo de Errores**
    - Estructura para manejo de errores
