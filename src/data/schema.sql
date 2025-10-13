@@ -1,76 +1,57 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 21-08-2025 a las 04:27:43
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Script Base de Datos Reservas
+-- MySQL/MariaDB - Corregido para campos creado y modificado
+
+DROP DATABASE IF EXISTS reservas;
+CREATE DATABASE reservas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE reservas;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `reservas`
---
-
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `reservas`
---
-
-CREATE TABLE `reservas` (
-  `reserva_id` int(11) NOT NULL,
-  `fecha_reserva` date NOT NULL,
-  `salon_id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `turno_id` int(11) NOT NULL,
-  `foto_cumpleaniero` varchar(255) DEFAULT NULL,
-  `tematica` varchar(255) DEFAULT NULL,
-  `importe_salon` decimal(10,2) DEFAULT NULL,
-  `importe_total` decimal(10,2) DEFAULT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: reservas
+-- --------------------------------------------------------
+CREATE TABLE reservas (
+  reserva_id INT(11) NOT NULL AUTO_INCREMENT,
+  fecha_reserva DATE NOT NULL,
+  salon_id INT(11) NOT NULL,
+  usuario_id INT(11) NOT NULL,
+  turno_id INT(11) NOT NULL,
+  foto_cumpleaniero VARCHAR(255) DEFAULT NULL,
+  tematica VARCHAR(255) DEFAULT NULL,
+  importe_salon DECIMAL(10,2) DEFAULT NULL,
+  importe_total DECIMAL(10,2) DEFAULT NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (reserva_id),
+  KEY reservas_fk2 (salon_id),
+  KEY reservas_fk3 (usuario_id),
+  KEY reservas_fk4 (turno_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `reservas`
---
-
-INSERT INTO `reservas` (`reserva_id`, `fecha_reserva`, `salon_id`, `usuario_id`, `turno_id`, `foto_cumpleaniero`, `tematica`, `importe_salon`, `importe_total`, `activo`, `creado`, `modificado`) VALUES
+INSERT INTO reservas (reserva_id, fecha_reserva, salon_id, usuario_id, turno_id, foto_cumpleaniero, tematica, importe_salon, importe_total, activo, creado, modificado) VALUES
 (1, '2025-10-08', 1, 1, 1, NULL, 'Plim plim', NULL, 200000.00, 1, '2025-08-19 22:02:33', '2025-08-19 22:02:33'),
 (2, '2025-10-08', 2, 1, 1, NULL, 'Messi', NULL, 100000.00, 1, '2025-08-19 22:03:45', '2025-08-19 22:03:45'),
 (3, '2025-10-08', 2, 2, 1, NULL, 'Palermo', NULL, 500000.00, 1, '2025-08-19 22:03:45', '2025-08-19 22:03:45');
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `reservas_servicios`
---
-
-CREATE TABLE `reservas_servicios` (
-  `reserva_servicio_id` int(11) NOT NULL,
-  `reserva_id` int(11) NOT NULL,
-  `servicio_id` int(11) NOT NULL,
-  `importe` decimal(10,2) NOT NULL,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: reservas_servicios
+-- --------------------------------------------------------
+CREATE TABLE reservas_servicios (
+  reserva_servicio_id INT(11) NOT NULL AUTO_INCREMENT,
+  reserva_id INT(11) NOT NULL,
+  servicio_id INT(11) NOT NULL,
+  importe DECIMAL(10,2) NOT NULL,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (reserva_servicio_id),
+  KEY reservas_servicios_fk1 (reserva_id),
+  KEY reservas_servicios_fk2 (servicio_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `reservas_servicios`
---
-
-INSERT INTO `reservas_servicios` (`reserva_servicio_id`, `reserva_id`, `servicio_id`, `importe`, `creado`, `modificado`) VALUES
+INSERT INTO reservas_servicios (reserva_servicio_id, reserva_id, servicio_id, importe, creado, modificado) VALUES
 (1, 1, 1, 50000.00, '2025-08-19 22:07:31', '2025-08-19 22:07:31'),
 (2, 1, 2, 50000.00, '2025-08-19 22:07:31', '2025-08-19 22:07:31'),
 (3, 1, 3, 50000.00, '2025-08-19 22:07:31', '2025-08-19 22:07:31'),
@@ -83,29 +64,23 @@ INSERT INTO `reservas_servicios` (`reserva_servicio_id`, `reserva_id`, `servicio
 (10, 3, 4, 200000.00, '2025-08-19 22:09:17', '2025-08-19 22:09:17');
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `salones`
---
-
-CREATE TABLE `salones` (
-  `salon_id` int(11) NOT NULL,
-  `titulo` varchar(255) NOT NULL,
-  `direccion` varchar(255) NOT NULL,
-  `latitud` decimal(10,8) DEFAULT NULL,
-  `longitud` decimal(11,8) DEFAULT NULL,
-  `capacidad` int(11) DEFAULT NULL,
-  `importe` decimal(10,2) NOT NULL,
-  `activo` tinyint(1) DEFAULT 1,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: salones
+-- --------------------------------------------------------
+CREATE TABLE salones (
+  salon_id INT(11) NOT NULL AUTO_INCREMENT,
+  titulo VARCHAR(255) NOT NULL,
+  direccion VARCHAR(255) NOT NULL,
+  latitud DECIMAL(10,8) DEFAULT NULL,
+  longitud DECIMAL(11,8) DEFAULT NULL,
+  capacidad INT(11) DEFAULT NULL,
+  importe DECIMAL(10,2) NOT NULL,
+  activo TINYINT(1) DEFAULT 1,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (salon_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `salones`
---
-
-INSERT INTO `salones` (`salon_id`, `titulo`, `direccion`, `latitud`, `longitud`, `capacidad`, `importe`, `activo`, `creado`, `modificado`) VALUES
+INSERT INTO salones (salon_id, titulo, direccion, latitud, longitud, capacidad, importe, activo, creado, modificado) VALUES
 (1, 'Principal', 'San Lorenzo 1000', NULL, NULL, 200, 95000.00, 1, '2025-08-19 21:51:22', '2025-08-19 21:51:22'),
 (2, 'Secundario', 'San Lorenzo 1000', NULL, NULL, 70, 7000.00, 1, '2025-08-19 21:51:22', '2025-08-19 21:51:22'),
 (3, 'Cancha Fútbol 5', 'Alberdi 300', NULL, NULL, 50, 150000.00, 1, '2025-08-19 21:51:22', '2025-08-19 21:51:22'),
@@ -113,25 +88,19 @@ INSERT INTO `salones` (`salon_id`, `titulo`, `direccion`, `latitud`, `longitud`,
 (5, 'Trampolín Play', 'Belgrano 100', NULL, NULL, 70, 200000.00, 1, '2025-08-19 21:51:22', '2025-08-19 21:51:22');
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `servicios`
---
-
-CREATE TABLE `servicios` (
-  `servicio_id` int(11) NOT NULL,
-  `descripcion` varchar(255) NOT NULL,
-  `importe` decimal(10,2) NOT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: servicios
+-- --------------------------------------------------------
+CREATE TABLE servicios (
+  servicio_id INT(11) NOT NULL AUTO_INCREMENT,
+  descripcion VARCHAR(255) NOT NULL,
+  importe DECIMAL(10,2) NOT NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (servicio_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `servicios`
---
-
-INSERT INTO `servicios` (`servicio_id`, `descripcion`, `importe`, `activo`, `creado`, `modificado`) VALUES
+INSERT INTO servicios (servicio_id, descripcion, importe, activo, creado, modificado) VALUES
 (1, 'Sonido', 15000.00, 1, '2025-08-19 21:47:55', '2025-08-19 21:47:55'),
 (2, 'Mesa dulce', 25000.00, 1, '2025-08-19 21:47:55', '2025-08-19 21:47:55'),
 (3, 'Tarjetas de invitación', 5000.00, 1, '2025-08-19 21:47:55', '2025-08-19 21:47:55'),
@@ -142,55 +111,43 @@ INSERT INTO `servicios` (`servicio_id`, `descripcion`, `importe`, `activo`, `cre
 (8, 'Maquillaje infantil', 1000.00, 1, '2025-08-20 21:31:00', '2025-08-20 21:31:00');
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `turnos`
---
-
-CREATE TABLE `turnos` (
-  `turno_id` int(11) NOT NULL,
-  `orden` int(11) NOT NULL,
-  `hora_desde` time NOT NULL,
-  `hora_hasta` time NOT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: turnos
+-- --------------------------------------------------------
+CREATE TABLE turnos (
+  turno_id INT(11) NOT NULL AUTO_INCREMENT,
+  orden INT(11) NOT NULL,
+  hora_desde TIME NOT NULL,
+  hora_hasta TIME NOT NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (turno_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `turnos`
---
-
-INSERT INTO `turnos` (`turno_id`, `orden`, `hora_desde`, `hora_hasta`, `activo`, `creado`, `modificado`) VALUES
+INSERT INTO turnos (turno_id, orden, hora_desde, hora_hasta, activo, creado, modificado) VALUES
 (1, 1, '12:00:00', '14:00:00', 1, '2025-08-19 21:44:19', '2025-08-19 21:44:19'),
 (2, 2, '15:00:00', '17:00:00', 1, '2025-08-19 21:46:08', '2025-08-19 21:46:08'),
 (3, 3, '18:00:00', '20:00:00', 1, '2025-08-19 21:46:08', '2025-08-19 21:46:08');
 
 -- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `usuarios`
---
-
-CREATE TABLE `usuarios` (
-  `usuario_id` int(11) NOT NULL,
-  `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
-  `nombre_usuario` varchar(50) NOT NULL,
-  `contrasenia` varchar(255) NOT NULL,
-  `tipo_usuario` tinyint(4) NOT NULL,
-  `celular` varchar(20) DEFAULT NULL,
-  `foto` varchar(255) DEFAULT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1,
-  `creado` timestamp NOT NULL DEFAULT current_timestamp(),
-  `modificado` timestamp NOT NULL DEFAULT current_timestamp()
+-- Tabla: usuarios
+-- --------------------------------------------------------
+CREATE TABLE usuarios (
+  usuario_id INT(11) NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+  contrasenia VARCHAR(255) NOT NULL,
+  tipo_usuario TINYINT(4) NOT NULL,
+  celular VARCHAR(20) DEFAULT NULL,
+  foto VARCHAR(255) DEFAULT NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  creado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modificado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (usuario_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `usuarios`
---
-
-INSERT INTO `usuarios` (`usuario_id`, `nombre`, `apellido`, `nombre_usuario`, `contrasenia`, `tipo_usuario`, `celular`, `foto`, `activo`, `creado`, `modificado`) VALUES
+INSERT INTO usuarios (usuario_id, nombre, apellido, nombre_usuario, contrasenia, tipo_usuario, celular, foto, activo, creado, modificado) VALUES
 (1, 'Alberto', 'López', 'alblop@correo.com', 'cf584badd07d42dcb8506f8bae32aa96', 3, NULL, NULL, 1, '2025-08-19 21:37:51', '2025-08-19 21:37:51'),
 (2, 'Pamela', 'Gómez', 'pamgom@correo.com', '709ee61c97fc261d35aa2295e109b3fb', 3, NULL, NULL, 1, '2025-08-19 21:39:45', '2025-08-19 21:39:45'),
 (3, 'Esteban', 'Ciro', 'estcir@correo.com', 'da6541938e9afdcd420d1ccfc7cac2c7', 3, NULL, NULL, 1, '2025-08-19 21:41:50', '2025-08-19 21:41:50'),
@@ -199,112 +156,16 @@ INSERT INTO `usuarios` (`usuario_id`, `nombre`, `apellido`, `nombre_usuario`, `c
 (6, 'William', 'Corbalán', 'wilcor@correo.com', 'f68087e72fbdf81b4174fec3676c1790', 2, NULL, NULL, 1, '2025-08-19 21:41:50', '2025-08-19 21:41:50'),
 (7, 'Anahí', 'Flores', 'anaflo@correo.com', 'd4e767c916b51b8cc5c909f5435119b1', 2, NULL, NULL, 1, '2025-08-19 21:41:50', '2025-08-19 21:41:50');
 
---
--- Índices para tablas volcadas
---
+-- --------------------------------------------------------
+-- Foreign Keys
+-- --------------------------------------------------------
+ALTER TABLE reservas
+  ADD CONSTRAINT reservas_fk2 FOREIGN KEY (salon_id) REFERENCES salones (salon_id),
+  ADD CONSTRAINT reservas_fk3 FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id),
+  ADD CONSTRAINT reservas_fk4 FOREIGN KEY (turno_id) REFERENCES turnos (turno_id);
 
---
--- Indices de la tabla `reservas`
---
-ALTER TABLE `reservas`
-  ADD PRIMARY KEY (`reserva_id`),
-  ADD KEY `reservas_fk2` (`salon_id`),
-  ADD KEY `reservas_fk3` (`usuario_id`),
-  ADD KEY `reservas_fk4` (`turno_id`);
+ALTER TABLE reservas_servicios
+  ADD CONSTRAINT reservas_servicios_fk1 FOREIGN KEY (reserva_id) REFERENCES reservas (reserva_id),
+  ADD CONSTRAINT reservas_servicios_fk2 FOREIGN KEY (servicio_id) REFERENCES servicios (servicio_id);
 
---
--- Indices de la tabla `reservas_servicios`
---
-ALTER TABLE `reservas_servicios`
-  ADD PRIMARY KEY (`reserva_servicio_id`),
-  ADD KEY `reservas_servicios_fk1` (`reserva_id`),
-  ADD KEY `reservas_servicios_fk2` (`servicio_id`);
-
---
--- Indices de la tabla `salones`
---
-ALTER TABLE `salones`
-  ADD PRIMARY KEY (`salon_id`);
-
---
--- Indices de la tabla `servicios`
---
-ALTER TABLE `servicios`
-  ADD PRIMARY KEY (`servicio_id`);
-
---
--- Indices de la tabla `turnos`
---
-ALTER TABLE `turnos`
-  ADD PRIMARY KEY (`turno_id`);
-
---
--- Indices de la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`usuario_id`),
-  ADD UNIQUE KEY `nombre_usuario` (`nombre_usuario`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `reservas`
---
-ALTER TABLE `reservas`
-  MODIFY `reserva_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT de la tabla `reservas_servicios`
---
-ALTER TABLE `reservas_servicios`
-  MODIFY `reserva_servicio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de la tabla `salones`
---
-ALTER TABLE `salones`
-  MODIFY `salon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT de la tabla `servicios`
---
-ALTER TABLE `servicios`
-  MODIFY `servicio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT de la tabla `turnos`
---
-ALTER TABLE `turnos`
-  MODIFY `turno_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT de la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `reservas`
---
-ALTER TABLE `reservas`
-  ADD CONSTRAINT `reservas_fk2` FOREIGN KEY (`salon_id`) REFERENCES `salones` (`salon_id`),
-  ADD CONSTRAINT `reservas_fk3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`usuario_id`),
-  ADD CONSTRAINT `reservas_fk4` FOREIGN KEY (`turno_id`) REFERENCES `turnos` (`turno_id`);
-
---
--- Filtros para la tabla `reservas_servicios`
---
-ALTER TABLE `reservas_servicios`
-  ADD CONSTRAINT `reservas_servicios_fk1` FOREIGN KEY (`reserva_id`) REFERENCES `reservas` (`reserva_id`),
-  ADD CONSTRAINT `reservas_servicios_fk2` FOREIGN KEY (`servicio_id`) REFERENCES `servicios` (`servicio_id`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
