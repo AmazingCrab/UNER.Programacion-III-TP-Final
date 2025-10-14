@@ -2,8 +2,21 @@ import jwt from 'jsonwebtoken';
 import { getUserByUsername, verifyPassword } from '../services/user.service.js';
 import { ROLES } from '../config/roles.js';
 
-// ... (generateToken function) ...
-
+/**
+ * Genera un token JWT para el usuario autenticado.
+ * Utiliza el ID y el rol para el payload.
+ */
+const generateToken = (user) => {
+    const payload = {
+        id: user.usuario_id,
+        role: user.tipo_usuario 
+    };
+    
+    // Genera el token usando la clave secreta y la expiración de .env
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN || '1h' // Asume JWT_EXPIRES_IN en .env
+    });
+};
 /**
  * Controlador para la ruta POST /api/auth/login
  */
