@@ -115,4 +115,7 @@ router.post('/',
     authorize(writeRoles), // express validator
     createSalonValidation, // Middleware de validación de datos
     createSalon); // Controlador
-´´´
+```
+
+## Una vez realizadas las rutas....
+Tenemos que agregar apicache y notificar x mail
