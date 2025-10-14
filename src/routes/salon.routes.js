@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSalones, getSalon, createSalon, updateSalon } from '../controllers/salon.controller.js';
+import { getSalones, getSalon, createSalon, updateSalon, deleteSalon } from '../controllers/salon.controller.js';
 import { verifyToken, authorize } from '../middlewares/auth.middleware.js';
 import { ROLES } from '../config/roles.js';
 import { createSalonValidation, updateSalonValidation } from '../middlewares/salon.validation.js'; // Importamos validación
@@ -38,6 +38,12 @@ router.put('/:id',
     authorize(writeRoles), 
     updateSalonValidation, // ⬅️ Aplicamos la validación de actualización
     updateSalon
+);
+// DELETE /api/salones/:id Soft Delete,  pone en 0 la columna ACTIVO
+router.delete('/:id', 
+    verifyToken, 
+    authorize(writeRoles), // ⬅️ Solo EMPLEADO y ADMIN pueden "borrar"
+    deleteSalon
 );
 //
 //////////////////////////////////////////////////////////////////////

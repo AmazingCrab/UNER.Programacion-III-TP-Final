@@ -100,7 +100,7 @@ export const createSalon = async (salonData) => {
  */
 export const updateSalon = async (salonId, salonData) => {
     
-    // Lista de columnas que pueden ser actualizadas
+    // Lista de columnas que podemos actualizar
     const updatableColumns = ['titulo', 'direccion', 'latitud', 'longitud', 'capacidad', 'importe', 'activo'];
     
     // Creamos dinámicamente el array de los campos a actualizar
@@ -136,6 +136,32 @@ export const updateSalon = async (salonId, salonData) => {
         return result.affectedRows; 
     } catch (error) {
         console.error(`Error al actualizar salón con ID ${salonId}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Realiza un soft delete (desactivación) de un salón por su ID.
+ * @param {number} salonId - El ID del salón a desactivar.
+ * @returns {Promise<number>} El número de filas afectadas (0 o 1).
+ */
+export const deleteSalon = async (salonId) => {
+    // Consulta SQL: Actualiza 'activo' a 0 para el ID dado.
+    const sql = `
+        UPDATE salones
+        SET activo = 0
+        WHERE salon_id = ? AND activo = 1 
+    `; 
+
+    // Parámetros: Solo el ID
+    const params = [salonId];
+    
+    try {
+        // Ejecutar la consulta. affectedRows es 1 si se desactivó y 0 si el ID no existe o ya estaba inactivo.
+        const [result] = await pool.query(sql, params);
+        return result.affectedRows; 
+    } catch (error) {
+        console.error(`Error al desactivar salón con ID ${salonId}:`, error);
         throw error;
     }
 };

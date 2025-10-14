@@ -103,8 +103,8 @@ export const createSalon = async (req, res, next) => {    // POST API/salones:id
         next(error);
     }
 };
-
-export const updateSalon = async (req, res, next) => {
+// Update con validación también
+export const updateSalon = async (req, res, next) => {  // PUT API/salones:id
     // Obtener ID de req.params
     const salonId = parseInt(req.params.id);
 
@@ -150,6 +150,42 @@ export const updateSalon = async (req, res, next) => {
         });
 
     } catch (error) {
+        next(error);
+    }
+};
+// Delete con validación también
+export const deleteSalon = async (req, res, next) => {
+    
+    // Obtener y validar ID (similar a getSalon y updateSalon)
+    const salonId = parseInt(req.params.id); 
+
+    if (isNaN(salonId) || salonId <= 0) {
+        const error = new Error('ID de salón inválido. Debe ser un número positivo.');
+        error.status = 400; // Bad Request
+        return next(error);
+    }
+
+    try {
+        // Llamamos al servicio
+        // affectedRows será 1 si el salón estaba activo y se desactivó, 0 si no existía o ya estaba inactivo.
+        const affectedRows = await salonService.deleteSalon(salonId); 
+
+        // Manejo de 404
+        if (affectedRows === 0) {
+            // El salón no se encontró (o ya estaba inactivo)
+            const error = new Error(`No se encontró un salón activo con ID ${salonId} para desactivar.`);
+            error.status = 404;
+            return next(error);
+        }
+
+        // Respuesta exitosa (200 OK)
+        res.status(200).json({
+            status: 'success',
+            message: `Salón con ID ${salonId} desactivado (soft delete) exitosamente.`,
+        });
+
+    } catch (error) {
+        // Capturar y enviar errores del servicio/DB al errorHandler (500)
         next(error);
     }
 };
