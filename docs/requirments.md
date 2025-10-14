@@ -14,3 +14,4 @@
 - morgan
 - jsonwebtoken
 - helmet
+- express-validator
