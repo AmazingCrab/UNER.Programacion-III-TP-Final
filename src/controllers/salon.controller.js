@@ -1,7 +1,8 @@
 
 import * as salonService from '../services/salon.service.js';
+import { validationResult } from 'express-validator';   // validamos para crear
 
-export const getSalones = async (req, res, next) => {   // API/salones
+export const getSalones = async (req, res, next) => {   // GET API/salones
     // tomamos los parametros de la consulta que vamos a exportar de servicios
     const limit = parseInt(req.query.limit) || 10; // Usar 10 como límite por defecto
     const offset = parseInt(req.query.offset) || 0;
@@ -32,7 +33,7 @@ export const getSalones = async (req, res, next) => {   // API/salones
     }
 };
 
-export const getSalon = async (req, res, next) => {
+export const getSalon = async (req, res, next) => {     // GET API/salones/:id
     
     // El ID se obtiene de req.params, NO de req.query (que es para la URL: ?key=value)
     const salonId = parseInt(req.params.id); 
@@ -62,6 +63,93 @@ export const getSalon = async (req, res, next) => {
 
     } catch (error) {
         // 5. Capturar y enviar errores del servicio/DB al errorHandler (500)
+        next(error);
+    }
+};
+
+// Crea un nuevo salón y aplica validación.
+export const createSalon = async (req, res, next) => {    // POST API/salones:id
+    
+    // Validación desde express-validator
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        // Si hay errores, retornar 400 Bad Request
+        const error = new Error('Error de validación en los datos del salón.');
+        error.status = 400; // Bad Request
+        // Adjuntamos los detalles del error para el cliente
+        error.details = errors.array(); 
+        return next(error);
+    }
+
+    try {
+        //  Extraer los datos limpios del body 
+        // IMPORTANTE:si fuera de la direccion entonces seria req.query
+        const salonData = req.body;
+        
+        // Llamamos al servicio para crear el salón
+        const newSalonId = await salonService.createSalon(salonData);
+
+        // Enviamos la respuesta exitosa (201 Created)
+        res.status(201).json({
+            status: 'success',
+            message: 'Salón creado exitosamente',
+            salonId: newSalonId,
+            data: { ...salonData, salon_id: newSalonId }
+        });
+
+    } catch (error) {
+        // Capturamos y enviar errores del servicio/DB al errorHandler (500)
+        next(error);
+    }
+};
+
+export const updateSalon = async (req, res, next) => {
+    // Obtener ID de req.params
+    const salonId = parseInt(req.params.id);
+
+    // Validación de ID (similar a getSalon)
+    if (isNaN(salonId) || salonId <= 0) {
+        const error = new Error('ID de salón inválido. Debe ser un número positivo.');
+        error.status = 400; // Bad Request
+        return next(error);
+    }
+    
+    // Manejo de errores de la validación de express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const error = new Error('Error de validación en los datos de actualización.');
+        error.status = 400; 
+        error.details = errors.array(); 
+        return next(error);
+    }
+    
+    // Verificamos que el body no esté vacío (al menos 1 campo para actualizar)
+    if (Object.keys(req.body).length === 0) {
+        const error = new Error('No se proporcionaron datos para actualizar.');
+        error.status = 400; 
+        return next(error);
+    }
+
+    try {
+        // Llamamos al servicio
+        const affectedRows = await salonService.updateSalon(salonId, req.body);
+        
+        // Manejo de 404
+        if (affectedRows === 0) {
+            // Esto ocurre si el ID no existe
+            const error = new Error(`No se encontró o no se pudo actualizar el salón con ID ${salonId}.`);
+            error.status = 404;
+            return next(error);
+        }
+
+        // 7. Respuesta exitosa (200 OK)
+        res.status(200).json({
+            status: 'success',
+            message: `Salón con ID ${salonId} actualizado exitosamente.`,
+        });
+
+    } catch (error) {
         next(error);
     }
 };
