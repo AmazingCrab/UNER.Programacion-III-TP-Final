@@ -100,3 +100,8 @@ Si la autorización es exitosa, la petición llega a la lógica final (ej. salon
 ¡Con este mapa, el equipo tiene una visión clara de cómo se divide la responsabilidad en la API!
 
 Ahora podemos iniciar con la Persona 2. ¿Comenzamos con la entidad Servicios?
+
+
+## Como reutilizar el código 
+De la rama Ema en adelante se puede reutilizar la estructura.
+Para las rutas, crear primero el servicio(jquery)+controlador+route en ese orden
