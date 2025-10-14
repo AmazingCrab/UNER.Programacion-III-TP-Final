@@ -118,4 +118,8 @@ router.post('/',
 ```
 
 ## Una vez realizadas las rutas....
-Tenemos que agregar apicache y notificar x mail
+- Tenemos que agregar apicache 
+- Notificar x mail
+- Mejorar el manejador de errores
+- Convertir en clases, controladores y servicios
+
