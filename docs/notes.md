@@ -102,6 +102,17 @@ Si la autorización es exitosa, la petición llega a la lógica final (ej. salon
 Ahora podemos iniciar con la Persona 2. ¿Comenzamos con la entidad Servicios?
 
 
-## Como reutilizar el código 
-De la rama Ema en adelante se puede reutilizar la estructura.
-Para las rutas, crear primero el servicio(jquery)+controlador+route en ese orden
+## Como reutilizar el código de expres
+- PRIMERO ver la tabla, xej,a activo en 1 se asigna automaticamente
+- SEGUNDO TimeStamps lo mismo, por eso no se tiene en cuenta en los servicios para POST
+- De la rama Ema en adelante se puede reutilizar la estructura.
+- Para las rutas GET, crear primero el servicio(jquery)+controlador+router en ese orden
+- Para POST/UPDATE/DELETE, tenemos que instalar express validator y el middlewar tabla.validator.js para validar los datos, luego servicio, controlador y router, en la ruta final, queda tb el validador
+Ejemplo:
+```js
+router.post('/', 
+    verifyToken, // login JWT
+    authorize(writeRoles), // express validator
+    createSalonValidation, // Middleware de validación de datos
+    createSalon); // Controlador
+´´´
