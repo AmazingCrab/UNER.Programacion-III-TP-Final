@@ -6,13 +6,14 @@ import compression from 'compression';  // compresion de datos
 import morgan from 'morgan';  // logging HTTP
 import helmet from 'helmet';  // seguridad
 
-// Determina el archivo a cargar basado en NODE_ENV *-No mover-*
+// Determina el archivo a cargar basado en NODE_ENV
 const envFile = process.env.NODE_ENV === 'production' 
     ? '.env.production' 
     : '.env.development';
-dotenv.config({ path: envFile });  // *-No mover-*
+dotenv.config({ path: envFile });  // ⬅️ CARGA DE VARIABLES DE ENTORNO
 
-import pool from './config/db.js'; // Importar el pool de conexiones *-no mover-*
+// 🚨 Importar la función de inicialización del pool DEBE IR DESPUÉS de dotenv.config()
+import { initializeDbPool } from './config/db.js'; 
 
 // IMPORTAMOS EL ROUTER CENTRAL DE LA API
 import apiRouter from './routes/index.js'; // Contiene /auth, /salones, etc.
@@ -24,7 +25,7 @@ import { notFound, errorHandler } from './middlewares/index.js';
 const app = express(); 
 
 // ************************************************************
-// CONFIGURACIÓN: USAR VARIABLES DE ENTORNO
+// CONFIGURACIÓN
 // ************************************************************
 // Settings de aplicación: Usar variables de entorno para HOST y PORT
 app.set('host', process.env.HOST || '127.0.0.1');
@@ -75,10 +76,8 @@ app.get("/", (req, res) => {
 
 // MIDDLEWARE DE AUTENTICACIÓN (JWT Check)
 // ⚠️ CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA REQUERIRÁ UN TOKEN VÁLIDO.
-// La única excepción es '/api/auth/login' que se maneja dentro del apiRouter.
 app.use('/api', (req, res, next) => {
     // Excluir específicamente la ruta de login de la verificación del token
-    // Si la ruta es '/api/auth/login', saltamos verifyToken
     if (req.path === '/auth/login' && req.method === 'POST') {
         return next();
     }
@@ -88,7 +87,6 @@ app.use('/api', (req, res, next) => {
 
 
 // RUTA CENTRAL DE LA API: Montamos el router central bajo el prefijo '/api'
-// Esto incluye /api/auth, /api/salones, etc.
 app.use('/api', apiRouter);
 
 
@@ -99,11 +97,30 @@ app.use('/api', apiRouter);
 app.use(notFound);    // Página personalizada de error 404
 app.use(errorHandler);// Página personalizada de error 500
 
-app.listen(app.get('port'), app.get('host'), (error) => {
+// ************************************************************
+// INICIO DEL SERVIDOR ASÍNCRONO
+// ************************************************************
+async function startServer() {
+    try {
+        // 🚨 1. INICIALIZAR EL POOL DE LA BASE DE DATOS (DEBE SER EL PRIMERO)
+        // Esto garantiza que process.env.DB_NAME está disponible cuando se crea el pool.
+        await initializeDbPool(); 
 
-  if (error) {
-    throw error;
-  }
-  // El mensaje ahora muestra la IP y el puerto correctos del .env
-  console.log(chalk.green.italic(`\n\u2714 Server Express: V5.1.0 - ONLINE\n\n\u2714 IP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
-});
+        // 2. Iniciar Express
+        app.listen(app.get('port'), app.get('host'), (error) => {
+
+            if (error) {
+                throw error;
+            }
+            // El mensaje ahora muestra la IP y el puerto correctos del .env
+            console.log(chalk.green.italic(`\n\u2714 Server Express: V5.1.0 - ONLINE\n\n\u2714 IP:${app.get('host')}:${app.get('port')} - Mode: ${process.env.NODE_ENV}\n`));
+        });
+
+    } catch (error) {
+        console.error(chalk.red.bold('Fallo al iniciar el servidor o la base de datos.'), error);
+        process.exit(1);
+    }
+}
+
+// Llamar a la función de inicio
+startServer();
