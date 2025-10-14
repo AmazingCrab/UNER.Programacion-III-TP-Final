@@ -1,31 +1,48 @@
 import chalk from 'chalk';
-import mysql from 'mysql2/promise'; //[Resultados de la Consulta,Metadata de la Conexion/Consulta] 
+import mysql from 'mysql2/promise'; 
 
+// Declara pool como una variable mutable (let)
+let pool;
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10, // Un número razonable de conexiones
-    queueLimit: 0
-});
+/**
+ * Función que inicializa el pool de conexiones usando las variables de entorno
+ * cargadas. Debe llamarse SÓLO después de dotenv.config()
+ */
+export async function initializeDbPool() {
+    
+    // 1. Verificación Crítica: Si DB_NAME sigue siendo undefined, salimos.
+    if (!process.env.DB_NAME) {
+        console.error(chalk.red.bold('\n\u2718 ERROR FATAL: DB_NAME no está definido tras la carga de dotenv. Verifique el archivo .env.'));
+        process.exit(1); 
+    }
+    
+    // 2. Creación del pool (solo una vez)
+    pool = mysql.createPool({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME, // AHORA sí debería estar disponible
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
 
-// Función para probar la conexión al inicio
-async function testDbConnection() {
+    // 3. Probar la conexión
     try {
         await pool.getConnection();
         console.log(chalk.blue.bold('\u2714 MySQL Database Connection Successful!'));
     } catch (error) {
         console.error(chalk.red.bold('\n\u2718 Error connecting to MySQL Database:'), error.message);
-        // Podrías decidir salir de la aplicación si la conexión a la DB falla
         process.exit(1); 
     }
 }
 
-// Llamar a la función al iniciar el módulo
-testDbConnection(); 
+// 4. Función de obtención del pool (para usar en servicios)
+export function getDbPool() {
+    if (!pool) {
+        throw new Error("El Pool de la base de datos no ha sido inicializado. Llame a initializeDbPool() primero.");
+    }
+    return pool;
+}
 
-// Exportar el pool de conexiones para usarlo en los servicios
-export default pool;
+// Exportamos solo las funciones. Ya NO exportamos 'pool' directamente.
