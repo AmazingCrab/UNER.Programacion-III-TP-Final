@@ -1,15 +1,15 @@
-//  crypto es un modulo de node para
-import pool from '../config/db.js';
+import { getDbPool } from '../config/db.js'; // ⬅️ ¡CAMBIO DE SINTAXIS!
 import crypto from 'crypto'; // Modulo de Node: Importar el módulo Crypto
 
 /**
- * // @ params es un bloque JsODC -> una prmoesa de como debe ser el código, 
  * @param {string} passwordText La contraseña en texto plano.
  * @returns {string} El hash MD5 de 32 caracteres.
  */
 const hashPassword = (passwordText) => {
     // Usamos MD5 +hex, xq es como esta configurada la base de datos existente
-    return crypto.createHash('md5').update(passwordText).digest('hex');
+    const generatedHash = crypto.createHash('md5').update(passwordText).digest('hex');
+    console.log(`[DEBUG HASH] Contraseña: "${passwordText}" -> Hash: ${generatedHash}`); // ⬅️ LÍNEA DE DEBUG
+    return generatedHash;
 };
 
 /**
@@ -18,12 +18,13 @@ const hashPassword = (passwordText) => {
  * @returns {Promise<object|null>} El objeto usuario si existe, o null.
  */
 export const getUserByUsername = async (username) => {
-    const sql = 'SELECT * FROM usuarios WHERE nombre_usuario = ? AND activo = 1'; // = ? previene inyeccion SQL
+    const sql = 'SELECT usuario_id, nombre_usuario, contrasenia, tipo_usuario, activo FROM usuarios WHERE nombre_usuario = ? AND activo = 1';
     
     try {
+        const pool = getDbPool(); // ⬅️ OBTENER EL POOL
         const [rows] = await pool.query(sql, [username]);
         return rows.length ? rows[0] : null; 
-    } catch (error) {   // los errores no van al handler xq es solo la capa de negocio
+    } catch (error) { 
         console.error("Error al obtener usuario por nombre de usuario:", error);
         throw new Error('Database query failed');
     }
