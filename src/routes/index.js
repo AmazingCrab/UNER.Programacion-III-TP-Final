@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authRouter from './auth.routes.js'; // Rutas de Login/Auth
-import salonRouter from './salon.routes.js'; // 1. Importar el Router de Salones
+import salonRouter from './salon.routes.js'; // Importar el Router de Salones
 
 const apiRouter = Router();
 
@@ -15,7 +15,7 @@ apiRouter.use('/auth', authRouter);
 // El prefijo '/api' se define en app.js.
 // Resultado: /api/salones, /api/servicios, etc.
 // ===============================================
-apiRouter.use('/salones', salonRouter); // ⬅️ 2. Montar el router de Salones bajo '/salones'
+apiRouter.use('/salones', salonRouter); // Montar el router de Salones bajo '/salones'
 
 // Ejemplo para futuras entidades
 // import servicioRouter from './servicio.routes.js';

@@ -10,13 +10,13 @@ let pool;
  */
 export async function initializeDbPool() {
     
-    // 1. Verificación Crítica: Si DB_NAME sigue siendo undefined, salimos.
+    // Verificación Crítica: Si DB_NAME sigue siendo undefined, salimos.
     if (!process.env.DB_NAME) {
         console.error(chalk.red.bold('\n\u2718 ERROR FATAL: DB_NAME no está definido tras la carga de dotenv. Verifique el archivo .env.'));
         process.exit(1); 
     }
     
-    // 2. Creación del pool (solo una vez)
+    //  Creación del pool (solo una vez)
     pool = mysql.createPool({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -27,7 +27,7 @@ export async function initializeDbPool() {
         queueLimit: 0
     });
 
-    // 3. Probar la conexión
+    //  Probar la conexión
     try {
         await pool.getConnection();
         console.log(chalk.blue.bold('\u2714 MySQL Database Connection Successful!'));
@@ -37,7 +37,7 @@ export async function initializeDbPool() {
     }
 }
 
-// 4. Función de obtención del pool (para usar en servicios)
+//  Función de obtención del pool (para usar en servicios)
 export function getDbPool() {
     if (!pool) {
         throw new Error("El Pool de la base de datos no ha sido inicializado. Llame a initializeDbPool() primero.");

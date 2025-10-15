@@ -24,19 +24,19 @@ export const login = async (req, res, next) => {
     const { username, password } = req.body;
 
     // **********************************************************
-    // 1. COMPROBACIÓN INICIAL (400 Bad Request)
+    //  COMPROBACIÓN INICIAL (400 Bad Request)
     // **********************************************************
     if (!username || !password) {
-        const error = new Error('Faltan credenciales (usuario o contraseña).'); // ✅ CREAR Error con un mensaje
+        const error = new Error('Faltan credenciales (usuario o contraseña).'); // CREAR Error con un mensaje
         error.status = 400; // Asigna el N° de error 
         return next(error); // va al handler
     }
 
     try {
-        // 2. Buscar usuario
+        //  Buscar usuario
         const user = await getUserByUsername(username);
 
-        // 3. Verificar usuario y contraseña en una sola condición (401 Unauthorized)
+        //  Verificar usuario y contraseña en una sola condición (401 Unauthorized)
         const isPasswordValid = user && verifyPassword(password, user.contrasenia);
         
         // Si NO hay usuario O la contraseña es inválida:
@@ -46,13 +46,13 @@ export const login = async (req, res, next) => {
             return next(error); // va al handler
         }
 
-        // 4. Generar Token
+        //  Generar Token
         const token = generateToken(user);
 
         // Determinar el nombre del rol para la respuesta
         const roleName = Object.keys(ROLES).find(key => ROLES[key] === user.tipo_usuario);
 
-        // 5. Respuesta exitosa con Token
+        //  Respuesta exitosa con Token
         res.status(200).json({
             status: 'success',
             message: 'Autenticación exitosa',

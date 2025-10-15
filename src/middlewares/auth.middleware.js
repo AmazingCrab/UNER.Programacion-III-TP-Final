@@ -2,12 +2,12 @@ import jwt from 'jsonwebtoken';
 import { ROLES } from '../config/roles.js';
 
 /**
- * Middleware 1: Verifica el token JWT en el header de la petición (Authorization: Bearer <token>).
+ * Middleware uno - Verifica el token JWT en el header de la petición (Authorization: Bearer <token>).
  * Si es válido, adjunta la información del usuario (req.user) y pasa a la siguiente función.
  * Si es inválido, devuelve 401 Unauthorized.
  */
 export const verifyToken = (req, res, next) => {
-    // 1. Extraer el header de autorización
+    //  Extraer el header de autorización
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -17,14 +17,14 @@ export const verifyToken = (req, res, next) => {
         return next(error);
     }
 
-    // 2. Extraer el token (eliminar el prefijo 'Bearer ')
+    //  Extraer el token (eliminar el prefijo 'Bearer ')
     const token = authHeader.split(' ')[1];
 
     try {
-        // 3. Verificar y decodificar el token usando la clave secreta
+        // Verificar y decodificar el token usando la clave secreta
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // 4. Adjuntar la información del usuario al objeto de la petición (req)
+        // Adjuntar la información del usuario al objeto de la petición (req)
         // Esto permite que las rutas sepan quién hizo la petición (req.user.id, req.user.role)
         req.user = decoded; 
         
@@ -40,7 +40,7 @@ export const verifyToken = (req, res, next) => {
 };
 
 /**
- * Middleware 2: Verifica que el rol del usuario (adjunto en req.user)
+ * Middleware dos - Verifica que el rol del usuario (adjunto en req.user)
  * sea uno de los roles permitidos para acceder a la ruta.
  * * Es una función "wrapper" que recibe los roles permitidos y devuelve el middleware.
  * @param {Array<number>} allowedRoles - Array de IDs de roles permitidos (ej. [ROLES.ADMIN, ROLES.EMPLEADO]).

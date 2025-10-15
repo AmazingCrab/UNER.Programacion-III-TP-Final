@@ -4,17 +4,17 @@
  */
 export const errorHandler = (err, req, res, next) => {
 
-    // 1) Evita que si se enviaron cabeceras no se envien denuevo crasheando el server
+    //  Evita que si se enviaron cabeceras no se envien denuevo crasheando el server
     if (res.headersSent) {
         return next(err);
     }
-    // 2) Obtener el entorno configurado por la línea app.set('env', ...)
+    //  Obtener el entorno configurado por la línea app.set('env', ...)
     const env = req.app.get('env');
 
-    // 3) Define el estado HTTP (usa 500 si no está especificado en el error)
+    //  Define el estado HTTP (usa 500 si no está especificado en el error)
     const statusCode = err.status || 500;
     
-    // 4) Lógica para mostrar detalles del error: solo en desarrollo o debug
+    // Lógica para mostrar detalles del error: solo en desarrollo o debug
     let errorDetails = {}; // Inicializamos como objeto vacío
 
     if (env === 'development' || env === 'debug') {
@@ -28,7 +28,7 @@ export const errorHandler = (err, req, res, next) => {
         };      
     }
 
-    // 5) Envía la respuesta con el estado HTTP y los detalles (solo si no estamos en producción)
+    //  Envía la respuesta con el estado HTTP y los detalles (solo si no estamos en producción)
     res.status(statusCode).json({
         status:'error',
         message: err.message || 'Error Interno del Servidor',

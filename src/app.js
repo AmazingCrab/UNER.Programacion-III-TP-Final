@@ -1,6 +1,6 @@
 import express from 'express';
 import chalk from 'chalk';    // colores
-import dotenv from 'dotenv';  // var de entorno
+import dotenv from 'dotenv';  // variable de entorno
 import cors from 'cors';      // dominios multiples y seguros
 import compression from 'compression';  // compresion de datos
 import morgan from 'morgan';  // logging HTTP
@@ -10,15 +10,15 @@ import helmet from 'helmet';  // seguridad
 const envFile = process.env.NODE_ENV === 'production' 
     ? '.env.production' 
     : '.env.development';
-dotenv.config({ path: envFile });  // ⬅️ CARGA DE VARIABLES DE ENTORNO
+dotenv.config({ path: envFile });  // CARGA DE VARIABLES DE ENTORNO
 
-// 🚨 Importar la función de inicialización del pool DEBE IR DESPUÉS de dotenv.config()
+// Importamos la función de inicialización del pool DEBE IR DESPUÉS de dotenv.config()
 import { initializeDbPool } from './config/db.js'; 
 
 // IMPORTAMOS EL ROUTER CENTRAL DE LA API
 import apiRouter from './routes/index.js'; // Contiene /auth, /salones, etc.
 
-// IMPORTAR MIDDLEWARES DE SEGURIDAD Y CIERRE
+// IMPORTAMOS MIDDLEWARES DE SEGURIDAD Y CIERRE
 import { verifyToken } from './middlewares/auth.middleware.js'; 
 import { notFound, errorHandler } from './middlewares/index.js'; 
 
@@ -27,6 +27,7 @@ const app = express();
 // ************************************************************
 // CONFIGURACIÓN
 // ************************************************************
+
 // Settings de aplicación: Usar variables de entorno para HOST y PORT
 app.set('host', process.env.HOST || '127.0.0.1');
 app.set('port', process.env.PORT || 3000);
@@ -42,14 +43,15 @@ app.use(helmet());
 // ************************************************************
 // MIDDLEWARES GLOBALES (Orden Lógico de Ejecución)
 // ************************************************************
-// 1. LOGGING
+
+// - LOGGING
 app.use(morgan('dev')); 
-// 2. RENDIMIENTO
+// - RENDIMIENTO
 app.use(compression()); 
-// 3. SEGURIDAD DE DOMINIOS
+// - SEGURIDAD DE DOMINIOS
 app.use(cors());        
 
-// 4. BODY PARSERS - DEBEN IR ANTES DE CUALQUIER RUTA QUE USE req.body
+// - BODY PARSERS - DEBEN IR ANTES DE CUALQUIER RUTA QUE USE req.body
 app.use(express.json({ limit: '5mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '5mb' })) 
 
@@ -75,7 +77,7 @@ app.get("/", (req, res) => {
 });
 
 // MIDDLEWARE DE AUTENTICACIÓN (JWT Check)
-// ⚠️ CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA REQUERIRÁ UN TOKEN VÁLIDO.
+// CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA, REQUERIRÁ UN TOKEN VÁLIDO.
 app.use('/api', (req, res, next) => {
     // Excluir específicamente la ruta de login de la verificación del token
     if (req.path === '/auth/login' && req.method === 'POST') {
@@ -102,11 +104,11 @@ app.use(errorHandler);// Página personalizada de error 500
 // ************************************************************
 async function startServer() {
     try {
-        // 🚨 1. INICIALIZAR EL POOL DE LA BASE DE DATOS (DEBE SER EL PRIMERO)
+        // a - INICIALIZAR EL POOL DE LA BASE DE DATOS (DEBE SER EL PRIMERO)
         // Esto garantiza que process.env.DB_NAME está disponible cuando se crea el pool.
         await initializeDbPool(); 
 
-        // 2. Iniciar Express
+        // b - Iniciar Express
         app.listen(app.get('port'), app.get('host'), (error) => {
 
             if (error) {

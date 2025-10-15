@@ -1,4 +1,4 @@
-import { getDbPool } from '../config/db.js'; // ⬅️ ¡CAMBIO DE SINTAXIS!
+import { getDbPool } from '../config/db.js'; // CAMBIO DE SINTAXIS
 import crypto from 'crypto'; // Modulo de Node: Importar el módulo Crypto
 
 /**
@@ -8,7 +8,7 @@ import crypto from 'crypto'; // Modulo de Node: Importar el módulo Crypto
 const hashPassword = (passwordText) => {
     // Usamos MD5 +hex, xq es como esta configurada la base de datos existente
     const generatedHash = crypto.createHash('md5').update(passwordText).digest('hex');
-    console.log(`[DEBUG HASH] Contraseña: "${passwordText}" -> Hash: ${generatedHash}`); // ⬅️ LÍNEA DE DEBUG
+    console.log(`[DEBUG HASH] Contraseña: "${passwordText}" -> Hash: ${generatedHash}`); // LÍNEA DE DEBUG
     return generatedHash;
 };
 
@@ -21,7 +21,7 @@ export const getUserByUsername = async (username) => {
     const sql = 'SELECT usuario_id, nombre_usuario, contrasenia, tipo_usuario, activo FROM usuarios WHERE nombre_usuario = ? AND activo = 1';
     
     try {
-        const pool = getDbPool(); // ⬅️ OBTENER EL POOL
+        const pool = getDbPool(); // OBTENER EL POOL
         const [rows] = await pool.query(sql, [username]);
         return rows.length ? rows[0] : null; 
     } catch (error) { 

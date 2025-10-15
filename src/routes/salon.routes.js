@@ -36,18 +36,18 @@ router.post('/',
 router.put('/:id', 
     verifyToken, 
     authorize(writeRoles), 
-    updateSalonValidation, // ⬅️ Aplicamos la validación de actualización
+    updateSalonValidation, //  Aplicamos la validación de actualización
     updateSalon
 );
 // DELETE /api/salones/:id Soft Delete,  pone en 0 la columna ACTIVO
 router.delete('/:id', 
     verifyToken, 
-    authorize(writeRoles), // ⬅️ Solo EMPLEADO y ADMIN pueden "borrar"
+    authorize(writeRoles), //  Solo EMPLEADO y ADMIN pueden "borrar"
     deleteSalon
 );
-//
-//////////////////////////////////////////////////////////////////////
-//
+
+//////////////////////////////////////////////////////
+
 // RUTAS DE ACCESO PÚBLICO (Lectura para todos los roles)
 //
 // GET /api/salones
