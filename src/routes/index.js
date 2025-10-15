@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authRouter from './auth.routes.js'; // Rutas de Login/Auth
-import salonRouter from './salon.routes.js'; // ⬅️ 1. Importar el Router de Salones
+import salonRouter from './salon.routes.js'; // 1. Importar el Router de Salones
 
 const apiRouter = Router();
 
