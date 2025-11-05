@@ -1,13 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { ROLES } from '../config/roles.js';
 
-/**
- * Middleware uno - Verifica el token JWT en el header de la petición (Authorization: Bearer <token>).
- * Si es válido, adjunta la información del usuario (req.user) y pasa a la siguiente función.
- * Si es inválido, devuelve 401 Unauthorized.
+/*Middleware uno - Verifica el token JWT en el header de la peticion (Authorization: Bearer <token>).
+  Si es vaalido, adjunta la informaci0n del usuario (req.user) y pasa a la siguiente función.
+  Si es invalido, devuelve 401 Unauthorized.
  */
 export const verifyToken = (req, res, next) => {
-    //  Extraer el header de autorización
+    //  Extraer el header de autorizacion
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -24,7 +23,7 @@ export const verifyToken = (req, res, next) => {
         // Verificar y decodificar el token usando la clave secreta
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Adjuntar la información del usuario al objeto de la petición (req)
+        // Adjuntar la informacion del usuario al objeto de la peticion (req)
         // Esto permite que las rutas sepan quién hizo la petición (req.user.id, req.user.role)
         req.user = decoded; 
         

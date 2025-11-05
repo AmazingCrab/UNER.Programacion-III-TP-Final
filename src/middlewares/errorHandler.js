@@ -14,7 +14,7 @@ export const errorHandler = (err, req, res, next) => {
     //  Define el estado HTTP (usa 500 si no está especificado en el error)
     const statusCode = err.status || 500;
     
-    // Lógica para mostrar detalles del error: solo en desarrollo o debug
+    // Logica para mostrar detalles del error: solo en desarrollo o debug
     let errorDetails = {}; // Inicializamos como objeto vacío
 
     if (env === 'development' || env === 'debug') {

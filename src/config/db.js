@@ -5,12 +5,12 @@ import mysql from 'mysql2/promise';
 let pool;
 
 /**
- * Función que inicializa el pool de conexiones usando las variables de entorno
+ * Funcion que inicializa el pool de conexiones usando las variables de entorno
  * cargadas. Debe llamarse SÓLO después de dotenv.config()
  */
 export async function initializeDbPool() {
     
-    // Verificación Crítica: Si DB_NAME sigue siendo undefined, salimos.
+    // Verificacion Critica Si DB_NAME sigue siendo undefined, salimos.
     if (!process.env.DB_NAME) {
         console.error(chalk.red.bold('\n\u2718 ERROR FATAL: DB_NAME no está definido tras la carga de dotenv. Verifique el archivo .env.'));
         process.exit(1); 
@@ -21,7 +21,7 @@ export async function initializeDbPool() {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME, // AHORA sí debería estar disponible
+        database: process.env.DB_NAME, 
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
@@ -37,7 +37,7 @@ export async function initializeDbPool() {
     }
 }
 
-//  Función de obtención del pool (para usar en servicios)
+//  Funcion de obtencionn del pool (para usar en servicios)
 export function getDbPool() {
     if (!pool) {
         throw new Error("El Pool de la base de datos no ha sido inicializado. Llame a initializeDbPool() primero.");

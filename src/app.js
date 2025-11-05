@@ -5,6 +5,8 @@ import cors from 'cors';      // dominios multiples y seguros
 import compression from 'compression';  // compresion de datos
 import morgan from 'morgan';  // logging HTTP
 import helmet from 'helmet';  // seguridad
+import { setupSwagger } from './swagger.js';
+
 
 // Determina el archivo a cargar basado en NODE_ENV
 const envFile = process.env.NODE_ENV === 'production' 
@@ -59,6 +61,9 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }))
 // ZONA DE RUTAS DE LA APLICACIÓN
 // ************************************************************
 
+//  Documentación Swagger (debe cargarse antes del middleware JWT)
+setupSwagger(app);
+
 // RUTA DE BIENVENIDA (Pública y fuera del prefijo /api)
 app.get("/", (req, res) => {
   const appName = app.get('app name');
@@ -78,19 +83,35 @@ app.get("/", (req, res) => {
 
 // MIDDLEWARE DE AUTENTICACIÓN (JWT Check)
 // CUALQUIER RUTA DEFINIDA DESPUÉS DE ESTA LÍNEA, REQUERIRÁ UN TOKEN VÁLIDO.
-app.use('/api', (req, res, next) => {
-    // Excluir específicamente la ruta de login de la verificación del token
-    if (req.path === '/auth/login' && req.method === 'POST') {
-        return next();
-    }
-    // Para todas las demás rutas dentro de '/api', aplica la verificación
-    verifyToken(req, res, next);
+// Middleware JWT: protege todo excepto el login y Swagger
+app.use((req, res, next) => {
+  const isLogin = req.originalUrl.includes('/api/auth/login') && req.method === 'POST';
+  const isSwagger = req.originalUrl.includes('/docs');
+  const isTestEmail = req.originalUrl.includes('/api/auth/test-email') && req.method === 'GET';
+  
+  if (isLogin || isSwagger || isTestEmail) {
+    return next(); // deja pasar login, swagger y test-email sin verificar token
+  }
+
+  verifyToken(req, res, next); // todas las demás rutas sí requieren token
 });
 
-
-// RUTA CENTRAL DE LA API: Montamos el router central bajo el prefijo '/api'
+// RUTA CENTRAL DE LA API
 app.use('/api', apiRouter);
 
+// DEBUG: Mostrar todas las rutas registradas en la app (solo si existen)
+if (app._router && app._router.stack) {
+  app._router.stack.forEach((r) => {
+    if (r.route && r.route.path) {
+      console.log('Ruta registrada:', r.route.path);
+    } else if (r.name === 'router') {
+      r.handle.stack.forEach((h) => {
+        const route = h.route;
+        if (route) console.log('Ruta registrada:', route.path);
+      });
+    }
+  });
+}
 
 // ************************************************************
 // MIDDLEWARES DE CIERRE (SIEMPRE AL FINAL)

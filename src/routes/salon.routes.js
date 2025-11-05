@@ -2,67 +2,160 @@ import { Router } from 'express';
 import { getSalones, getSalon, createSalon, updateSalon, deleteSalon } from '../controllers/salon.controller.js';
 import { verifyToken, authorize } from '../middlewares/auth.middleware.js';
 import { ROLES } from '../config/roles.js';
-import { createSalonValidation, updateSalonValidation } from '../middlewares/salon.validation.js'; // Importamos validación
+import { createSalonValidation, updateSalonValidation } from '../middlewares/salon.validation.js';
 
 const router = Router();
 
-// Definimos los roles que tienen permiso de lectura (CLIENTE, EMPLEADO, ADMIN)
-const readRoles = [
-    ROLES.CLIENTE,
-    ROLES.EMPLEADO,
-    ROLES.ADMIN
-];
+const readRoles = [ROLES.CLIENTE, ROLES.EMPLEADO, ROLES.ADMIN];
+const writeRoles = [ROLES.EMPLEADO, ROLES.ADMIN];
 
-// Roles con permiso de write/update/delete (Empleados y Admins)
-const writeRoles = [
-    ROLES.EMPLEADO,
-    ROLES.ADMIN
-];
+/**
+ * @swagger
+ * /salones:
+ *   post:
+ *     summary: Crear un salón
+ *     tags: [Salones]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - titulo
+ *               - direccion
+ *               - capacidad
+ *               - importe
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *                 example: Salón Azul
+ *               direccion:
+ *                 type: string
+ *                 example: Calle Falsa 123
+ *               capacidad:
+ *                 type: integer
+ *                 example: 50
+ *               importe:
+ *                 type: number
+ *                 example: 5000
+ *     responses:
+ *       201:
+ *         description: Salón creado
+ *       400:
+ *         description: Datos inválidos
+ *       401:
+ *         description: No autorizado
+ */
+router.post('/', verifyToken, authorize(writeRoles), createSalonValidation, createSalon);
 
-// Aplicamos verifyToken (autenticación en W/U/D osea, POST-PUT-DEL)
-// Aplicamos authorize (control de rol) a todas las rutas. 
-//
-// RUTAS DE ESCRITURA (POST /) - REQUIERE EMPLEADO O ADMIN ///////
-//
-// POST /api/salones
-router.post('/', 
-    verifyToken, 
-    authorize(writeRoles), // Solo EMPLEADO y ADMIN
-    createSalonValidation, // Middleware de validación de datos
-    createSalon // Controlador
-);
-//
-// PUT /api/salones/:id (Actualizar)
-router.put('/:id', 
-    verifyToken, 
-    authorize(writeRoles), 
-    updateSalonValidation, //  Aplicamos la validación de actualización
-    updateSalon
-);
-// DELETE /api/salones/:id Soft Delete,  pone en 0 la columna ACTIVO
-router.delete('/:id', 
-    verifyToken, 
-    authorize(writeRoles), //  Solo EMPLEADO y ADMIN pueden "borrar"
-    deleteSalon
-);
+/**
+ * @swagger
+ * /salones/{id}:
+ *   put:
+ *     summary: Modificar un salón
+ *     tags: [Salones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *                 example: Salón Verde
+ *               direccion:
+ *                 type: string
+ *                 example: Calle Real 456
+ *               capacidad:
+ *                 type: integer
+ *                 example: 80
+ *               importe:
+ *                 type: number
+ *                 example: 7000
+ *     responses:
+ *       200:
+ *         description: Salón actualizado
+ *       400:
+ *         description: Datos inválidos
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Salón no encontrado
+ */
+router.put('/:id', verifyToken, authorize(writeRoles), updateSalonValidation, updateSalon);
 
-//////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /salones/{id}:
+ *   delete:
+ *     summary: Eliminar un salón (soft delete)
+ *     tags: [Salones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Salón desactivado
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Salón no encontrado
+ */
+router.delete('/:id', verifyToken, authorize(writeRoles), deleteSalon);
 
-// RUTAS DE ACCESO PÚBLICO (Lectura para todos los roles)
-//
-// GET /api/salones
-router.get('/',
-    verifyToken,
-    authorize(readRoles),
-    getSalones
-);
-//
-// GET /api/salones/:id
-router.get('/:id',
-    verifyToken,
-    authorize(readRoles),
-    getSalon
-);
+/**
+ * @swagger
+ * /salones:
+ *   get:
+ *     summary: Listar todos los salones
+ *     tags: [Salones]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de salones
+ *       401:
+ *         description: No autorizado
+ */
+router.get('/', verifyToken, authorize(readRoles), getSalones);
 
+/**
+ * @swagger
+ * /salones/{id}:
+ *   get:
+ *     summary: Ver salón por ID
+ *     tags: [Salones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Detalle del salón
+ *       404:
+ *         description: Salón no encontrado
+ */
+router.get('/:id', verifyToken, authorize(readRoles), getSalon);
 
 export default router;
